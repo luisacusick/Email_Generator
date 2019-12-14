@@ -9,16 +9,21 @@ get_entry_file = function(schoolID)
 #' @param entry_file the csv file from tabroom with our entries for a given tournament
 #' @param email_file the CCFS student/parent directory
 #' @param out_file the name/directory to save the output file to
-readInNames = function(entry_file, email_file, out_file)
+readInNames = function(entry_file, email_file = "CCFS_ContactInfo.csv", out_file = "Emails.txt")
 {
   #table of entries
   names = read.table(file = entry_file, skip = 2, header = F, 
                      fill = T, sep = ",", stringsAsFactors = F)
-  rows1 = which(names$V12 != "") #the rows in V11 that have entry names
-  rows2 = which(names$V14 != "") #the rows in V13 that have entry names
   
-  parsed = names$V12[rows1] #student last names
-  parsed2 = names$V14[rows2] #student last names
+  #check which 2 columns have student last names; not all entry data frames are the same
+  p = read.csv(file = entry_file, skip =1, nrows = 1, header = F) 
+  col = which(p == "Students")
+  
+  rows1 = which(names[,col+1] != "") #the rows in V11 that have entry names
+  rows2 = which(names[,col+3] != "") #the rows in V13 that have entry names
+  
+  parsed = names[rows1, col+1] #student last names
+  parsed2 = names[rows2, col+3] #student last names
   
   last_names= c(parsed,parsed2) #all last names
   
